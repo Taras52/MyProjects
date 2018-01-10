@@ -2,7 +2,7 @@ import chardet
 import json
 from pprint import pprint
 
-with open('newsfr.json') as f:
+with open("newsfr.json") as f:
     news = json.load(f)
     pprint(news)
 
