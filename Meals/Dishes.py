@@ -1,32 +1,30 @@
 
-def read_meals_file(a):
+def read_meals_file(filename):
     meals = {}
-    with open(a) as f:
+    with open(filename) as f:
         for line in f:
             key_meal = line.strip().lower()
             meals_number = f.readline()
             ing_number = int(meals_number)
-            i = 1
             ing_list_total = []
-            while i <= ing_number:
+            for _ in range(ing_number):
                 ing_list = f.readline().strip()
-                ing_list = list(ing_list.split(' | '))
+                ing_list = ing_list.split(' | ')
                 ing_list[1] = int(ing_list[1])
                 ing_dict = {'ingridient_name': ing_list[0], 'quantity': ing_list[1], 'measure': ing_list[2]}
                 ing_list_total.append(ing_dict)
-                i += 1
             meals[key_meal] = ing_list_total
             f.readline()
     return meals
 
 
-def get_shop_list_by_dishes(a, b, c):
+def get_shop_list_by_dishes(dish_count, people, meals_file):
     shop_list = {}
-    cook_book = read_meals_file(c)
-    for dish in a:
+    cook_book = read_meals_file(meals_file)
+    for dish in dish_count:
         for ing in cook_book[dish]:
             new_shop_list_item = dict(ing)
-            new_shop_list_item['quantity'] *= b
+            new_shop_list_item['quantity'] *= people
             if new_shop_list_item['ingridient_name'] not in shop_list:
                 shop_list[new_shop_list_item['ingridient_name']] = new_shop_list_item
             else:
