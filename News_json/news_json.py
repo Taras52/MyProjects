@@ -1,7 +1,6 @@
 import json
 
 
-
 def top10_words_in_article(filename):
     with open(filename) as f:
         a = json.load(f)
