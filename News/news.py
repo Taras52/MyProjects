@@ -8,12 +8,12 @@ def top10_words_in_article(a):  # функция поиска топ-10 слов
         s = data.decode(result['encoding'])
         list_with_words = s.split(' ')  # из строки делаем список с элементами-словами
         worddict = {}
-        for i, k in enumerate(list_with_words):  # наполняем словарь парами "слово:кол-во вхождений в статью"
-            if len(list_with_words[i]) > 6:
-                if list_with_words[i] not in worddict:
-                    worddict[list_with_words[i]] = 1
-                elif list_with_words[i] in worddict:
-                    worddict[list_with_words[i]] += 1
+        for word in list_with_words:  # наполняем словарь парами "слово:кол-во вхождений в статью"
+            if len(word) > 6:
+                if word not in worddict:
+                    worddict[word] = 1
+                elif word in worddict:
+                    worddict[word] += 1
         words = []
         count_words = []
         for i, k in worddict.items():  # из словаря делаем 2 списка - со словами и кол-вом вхождений
