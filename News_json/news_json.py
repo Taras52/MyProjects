@@ -1,9 +1,13 @@
 import json
+import chardet
 
 
 def top10_words_in_article(filename):
-    with open(filename) as f:
-        a = json.load(f)
+    with open(filename, 'rb') as f:
+        data = f.read()
+        result = chardet.detect(data)
+        s = data.decode(result['encoding'])
+        a = json.loads(s)
         b = a['rss']['channel']['items']
         c = str()
         for i, k in enumerate(b):
