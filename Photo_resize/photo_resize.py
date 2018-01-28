@@ -5,10 +5,8 @@ import os
 def image_resize(source):
     filelist = [f for f in os.listdir(source)]
     cp_path_output = os.path.join(current_dir, 'Result')
-    try:
+    if os.path.exists(cp_path_output) != True:
         os.makedirs(cp_path_output)
-    except FileExistsError:
-        pass
     for file in filelist:
         cp_path_input = os.path.join(current_dir, 'Source', file)
         cp_path = 'cp' + ' ' + cp_path_input + ' ' + cp_path_output
