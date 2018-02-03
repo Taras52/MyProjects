@@ -11,8 +11,7 @@ def search_data_in_file(input_data, search_list):
             data = f.read()
             if input_data in data:
                 aux_list.append(file_name)
-    search_list = aux_list
-    return search_list
+    return aux_list
 
 
 if __name__ == '__main__':
