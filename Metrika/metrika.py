@@ -1,6 +1,5 @@
 import requests
 from urllib.parse import urlencode
-from pprint import pprint
 
 counter_id = 47590042
 app_id = 'a9f4c0ebce3f4f1eabb84eec093cb635'
@@ -16,19 +15,25 @@ auth_data = {
 
 
 class GetInfoFromMetrika:
-    def __init__(self, token):
+    def __init__(self, token, counter):
         self.token = token
+        self.counter = counter
 
-    def get_counters(self):
-        url = 'https://api-metrika.yandex.ru/management/v1/counters'
+    def get_visits(self):
+        url = 'https://api-metrika.yandex.ru/stat/v1/data'
         headers = {
             'Authorization': 'OAuth {}'.format(self.token),
             'Content-Type': 'application/json'
         }
-        response = requests.get(url, headers=headers, params={'pretty': 1})
+        params = {
+            'id': self.counter,
+            'metrics': 'ym:s:visits, ym:s:pageviews, ym:s:users'
+        }
+        response = requests.get(url, params=params, headers=headers)
         return response.json()
 
 
-taras52 = GetInfoFromMetrika(token_yam)
-counters = taras52.get_counters()
-pprint(counters)
+taras52 = GetInfoFromMetrika(token_yam, '47590042')
+visits = taras52.get_visits()
+print('https://taras52.github.io:')
+print('Визитов {} Просмотров {} Посетителей {}'.format(visits['totals'][0], visits['totals'][1], visits['totals'][2]))
