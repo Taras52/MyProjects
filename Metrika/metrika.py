@@ -29,7 +29,7 @@ class GetInfoFromMetrika:
             'id': self.counter,
             'metrics': 'ym:s:visits, ym:s:pageviews, ym:s:users'
         }
-        response = requests.get(url, params=params, headers=headers)
+        response = requests.get(url, params=params, headers=headers).json()
         return response.json()
 
 
