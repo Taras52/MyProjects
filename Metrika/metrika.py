@@ -5,7 +5,7 @@ counter_id = 47590042
 app_id = 'a9f4c0ebce3f4f1eabb84eec093cb635'
 callback_url = 'https://oauth.yandex.ru/verification_code'
 auth_url = 'https://oauth.yandex.ru/authorize'
-token_yam = 'AQAAAAAAIyzzAATMNevHnq0CEkMbjPcdR0n32ac'
+token_yam = '*****'  # put your token instead
 
 auth_data = {
     'response_type': 'token',
