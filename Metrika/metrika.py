@@ -19,7 +19,7 @@ class GetInfoFromMetrika:
         self.token = token
         self.counter = counter
 
-    def get_visits(self):
+    def get_stat(self):
         url = 'https://api-metrika.yandex.ru/stat/v1/data'
         headers = {
             'Authorization': 'OAuth {}'.format(self.token),
@@ -29,11 +29,11 @@ class GetInfoFromMetrika:
             'id': self.counter,
             'metrics': 'ym:s:visits, ym:s:pageviews, ym:s:users'
         }
-        response = requests.get(url, params=params, headers=headers).json()
+        response = requests.get(url, params=params, headers=headers)
         return response.json()
 
 
 taras52 = GetInfoFromMetrika(token_yam, '47590042')
-visits = taras52.get_visits()
+visits = taras52.get_stat()
 print('https://taras52.github.io:')
 print('Визитов {} Просмотров {} Посетителей {}'.format(visits['totals'][0], visits['totals'][1], visits['totals'][2]))
