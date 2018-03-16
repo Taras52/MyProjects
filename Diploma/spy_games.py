@@ -16,7 +16,7 @@ def get_friends_list(vk_id, acc_token):
     return friends_ids
 
 
-def get_groups_by_friend_list(friend_list, acc_token):
+def get_group_by_friend_list(friend_list, acc_token):
     group_ids = []
     for friend in [8822, 20338, 31769, 68120, 179265, 195320, 265528, 292699, 295473, 314089]:
         params = {
@@ -71,5 +71,5 @@ def output_unique_groups(vk_id, friends_groups, acc_token, filepath):
 vkid = 5030613  # user id at vk.com
 token = '5dfd6b0dee902310df772082421968f4c06443abecbc082a8440cb18910a56daca73ac8d04b25154a1128'
 path_for_group = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'groups.json')
-print(get_groups_by_friend_list(get_friends_list(vkid, token), token))
-print(output_unique_groups(vkid, get_groups_by_friend_list(get_friends_list(vkid, token), token), token, path_for_group))
+print(get_group_by_friend_list(get_friends_list(vkid, token), token))
+print(output_unique_groups(vkid, get_group_by_friend_list(get_friends_list(vkid, token), token), token, path_for_group))
