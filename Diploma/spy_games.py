@@ -61,13 +61,11 @@ def output_unique_groups(vk_id, friends_groups, acc_token, filepath):
     print(group_info)
     list_of_group = group_info['response']
     list_of_group_final = []
-    dict_of_data = {}
     for f in list_of_group:
         dict_of_data = {'id': f['id'], 'name': f['name']}
         list_of_group_final.append(dict_of_data)
     with open(filepath, 'w') as f:
-        f.write(json.dump(list_of_group_final))
-
+        f.write(json.dumps(list_of_group_final, ensure_ascii=False))
 
 
 vkid = 5030613  # user id at vk.com
