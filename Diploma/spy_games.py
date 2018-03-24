@@ -1,75 +1,98 @@
 import requests
-import time
+from time import sleep
 import os
 import json
 
 
-def get_friends_list(vk_id, acc_token):
-    params = {
-        'access_token': acc_token,
-        'user_id': vk_id,
-        'v': '5.73'
+def do_request(url, parameters):
+    base_params = {
+        'v': VERSION,
+        'access_token': TOKEN,
     }
-    response = requests.get('https://api.vk.com/method/friends.get', params=params)
-    friends_list = response.json()
-    friends_ids = friends_list['response']['items']
+    base_params.update(parameters)
+    while True:
+        response = requests.get(url, base_params)
+        print('.', end='')
+        data = response.json()
+        if 'error' in data:
+            if int(data['error']['error_code']) == 6:
+                sleep(0.4)
+                continue
+            else:
+                result = None
+                break
+        else:
+            result = data['response']
+            break
+    print(' ')
+    return result
+
+
+def get_friends_list():
+    params = {
+        'user_id': VKID,
+    }
+    friends_ids = do_request('https://api.vk.com/method/friends.get', params)['items']
     return friends_ids
 
 
-def get_group_by_friend_list(friend_list, acc_token):
+def get_group_by_friend_list(friend_list):
     group_ids = []
-    for friend in [8822, 20338, 31769, 68120, 179265, 195320, 265528, 292699, 295473, 314089]:
+    for friend in friend_list:
         params = {
-            'access_token': acc_token,
             'user_id': friend,
-            'v': '5.73'
         }
-        response = requests.get('https://api.vk.com/method/groups.get', params=params)
-        print('.', end='')
-        group_list = response.json()
-        if 'error' in response.json().keys():
+        result = do_request('https://api.vk.com/method/groups.get', params)
+        if result is None:
             continue
-        group_ids.extend(group_list['response']['items'])
-        time.sleep(0.4)
-    print(' ')
+        else:
+            group_ids.extend(result['items'])
     group_ids = set(group_ids)
     return group_ids
 
 
-def output_unique_groups(vk_id, friends_groups, acc_token, filepath):
+def unique_groups_detect(friends_groups):
     params = {
-        'access_token': acc_token,
-        'user_id': vk_id,
-        'v': '5.73',
+        'user_id': VKID,
     }
-    response = requests.get('https://api.vk.com/method/groups.get', params=params)
-    group_list = response.json()
-    users_groups = group_list['response']['items']
+    users_groups = do_request('https://api.vk.com/method/groups.get', params)['items']
     users_groups = set(users_groups)
     unique_groups = users_groups - friends_groups
     unique_groups = list(unique_groups)
-    result = ','.join([str(group) for group in unique_groups])
+    return unique_groups
+
+
+def get_unique_group_data(list_of_groups):
+    result = ','.join([str(group) for group in list_of_groups])
     params = {
-        'access_token': acc_token,
-        'user_id': vk_id,
-        'fields': 'id, name, members_count',
-        'v': '5.73',
+        'fields': 'members_count',
         'group_ids': result,
+        'extended': 1
     }
-    response = requests.get('https://api.vk.com/method/groups.getById', params=params)
-    group_info = response.json()
-    print(group_info)
-    list_of_group = group_info['response']
+    list_of_group = do_request('https://api.vk.com/method/groups.getById', params)
     list_of_group_final = []
-    for f in list_of_group:
-        dict_of_data = {'id': f['id'], 'name': f['name']}
+    for group in list_of_group:
+        dict_of_data = {'id': group['id'], 'name': group['name'], 'members_count': group['members_count']}
         list_of_group_final.append(dict_of_data)
-    with open(filepath, 'w') as f:
-        f.write(json.dumps(list_of_group_final, ensure_ascii=False))
+    print(len(list_of_group_final))
+    return list_of_group_final
 
 
-vkid = 5030613  # user id at vk.com
-token = '5dfd6b0dee902310df772082421968f4c06443abecbc082a8440cb18910a56daca73ac8d04b25154a1128'
+def write_result_to_json(group_list, file_path):
+    with open(file_path, 'w') as resultfile:
+        json.dump(group_list, resultfile, ensure_ascii=False)
+
+
+VERSION = '5.73'
+with open('config.json', 'r') as f:
+    config_data = json.loads(f.read())
+    TOKEN = config_data['token']
+    VKID = config_data['vkid']
+
 path_for_group = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'groups.json')
-print(get_group_by_friend_list(get_friends_list(vkid, token), token))
-print(output_unique_groups(vkid, get_group_by_friend_list(get_friends_list(vkid, token), token), token, path_for_group))
+friend_ids = get_friends_list()
+print(friend_ids)
+group_id = get_group_by_friend_list(friend_ids)
+print(group_id)
+group_data = unique_groups_detect(group_id)
+write_result_to_json(get_unique_group_data(group_data), path_for_group)
