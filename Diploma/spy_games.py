@@ -74,7 +74,7 @@ def get_unique_group_data(list_of_groups):
     for group in list_of_group:
         dict_of_data = {'id': group['id'], 'name': group['name'], 'members_count': group['members_count']}
         list_of_group_final.append(dict_of_data)
-    print(len(list_of_group_final))
+    print('Количество уникальных групп пользователя {} - {}'.format(VKID, len(list_of_group_final)))
     return list_of_group_final
 
 
@@ -83,16 +83,14 @@ def write_result_to_json(group_list, file_path):
         json.dump(group_list, resultfile, ensure_ascii=False)
 
 
-VERSION = '5.73'
 with open('config.json', 'r') as f:
     config_data = json.loads(f.read())
     TOKEN = config_data['token']
     VKID = config_data['vkid']
+    VERSION = config_data['version']
 
 path_for_group = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'groups.json')
 friend_ids = get_friends_list()
-print(friend_ids)
 group_id = get_group_by_friend_list(friend_ids)
-print(group_id)
 group_data = unique_groups_detect(group_id)
 write_result_to_json(get_unique_group_data(group_data), path_for_group)
