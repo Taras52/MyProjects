@@ -4,6 +4,11 @@ import os
 import json
 
 
+TOO_MANY_REQUESTS = 6
+path_for_config = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.json')
+path_for_group = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'groups.json')
+
+
 def do_request(url, parameters):
     base_params = {
         'v': VERSION,
@@ -15,7 +20,7 @@ def do_request(url, parameters):
         print('.', end='')
         data = response.json()
         if 'error' in data:
-            if int(data['error']['error_code']) == 6:
+            if int(data['error']['error_code']) == TOO_MANY_REQUESTS:
                 sleep(0.4)
                 continue
             else:
@@ -37,7 +42,7 @@ def get_friends_list():
 
 
 def get_group_by_friend_list(friend_list):
-    group_ids = []
+    group_idents = []
     for friend in friend_list:
         params = {
             'user_id': friend,
@@ -46,9 +51,9 @@ def get_group_by_friend_list(friend_list):
         if result is None:
             continue
         else:
-            group_ids.extend(result['items'])
-    group_ids = set(group_ids)
-    return group_ids
+            group_idents.extend(result['items'])
+    group_idents = set(group_idents)
+    return group_idents
 
 
 def unique_groups_detect(friends_groups):
@@ -83,14 +88,14 @@ def write_result_to_json(group_list, file_path):
         json.dump(group_list, resultfile, ensure_ascii=False)
 
 
-with open('config.json', 'r') as f:
+with open(path_for_config, 'r') as f:
     config_data = json.loads(f.read())
     TOKEN = config_data['token']
     VKID = config_data['vkid']
     VERSION = config_data['version']
 
-path_for_group = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'groups.json')
-friend_ids = get_friends_list()
-group_id = get_group_by_friend_list(friend_ids)
-group_data = unique_groups_detect(group_id)
-write_result_to_json(get_unique_group_data(group_data), path_for_group)
+if __name__ == '__main__':
+    friend_ids = get_friends_list()
+    group_ids = get_group_by_friend_list(friend_ids)
+    group_data = unique_groups_detect(group_ids)
+    write_result_to_json(get_unique_group_data(group_data), path_for_group)
