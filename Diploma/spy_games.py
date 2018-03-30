@@ -1,6 +1,7 @@
 import requests
 from time import sleep
 import os
+import sys
 import json
 
 
@@ -18,6 +19,11 @@ def do_request(url, parameters):
     while True:
         response = requests.get(url, base_params)
         print('.', end='')
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            print('It is not a 200 error code: ' + str(err))
+            sys.exit()
         data = response.json()
         if 'error' in data:
             if int(data['error']['error_code']) == TOO_MANY_REQUESTS:
